@@ -26,7 +26,7 @@ trait Service extends JsonSupport  {
   implicit val system: ActorSystem
   implicit val executor: ExecutionContextExecutor
   implicit val materializer: Materializer
-  val hogeActor: ActorRef
+  val deleageActor: ActorRef
 
   def config: Config
   def logger: LoggingAdapter
@@ -41,7 +41,7 @@ trait Service extends JsonSupport  {
     } ~ pathPrefix("api" / "v1" /  "sample") {
       post {
         entity(as[KeyPlayer]) { myKey: KeyPlayer =>
-          hogeActor ! Employee(myKey.userId)
+          deleageActor ! Employee(myKey.userId)
           //implicit val timeout = Timeout(5 seconds)
 
           complete(s"${myKey.userId}\n")
@@ -73,7 +73,7 @@ object Main  extends App with Service {
   override val config = ConfigFactory.load()
   override val logger = Logging(system, getClass)
 
-  override val hogeActor: ActorRef  = system.actorOf(Props[DelegateActor])
+  override val deleageActor: ActorRef  = system.actorOf(Props[DelegateActor], "my-dispatcher")
 
   Http().bindAndHandle(routes, "0.0.0.0", 8080)
 }
