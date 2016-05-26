@@ -27,6 +27,13 @@ class DBWriteActor extends Actor {
 
       self ! userId
 
+    case KeyPlayer(userId, key) =>
+      val sleepTime = Random.nextInt(5) * 1000L
+      Thread.sleep(sleepTime)
+
+      val delegateActor: ActorRef = context.actorOf(Props[DelegateActor])
+      delegateActor ! userId
+
     case userId: String =>
       logger.info(s"${userId} is stopping... ${self.path}, ${self.toString()}")
       context.stop(self)
@@ -45,12 +52,20 @@ class DelegateActor extends Actor {
   implicit val ec = system.dispatcher
   implicit val materializer = ActorMaterializer()(system)
 
+  val globalWriter: ActorRef = context.actorOf(Props[DBWriteActor])
+
   def receive = {
     case Employee(userId) =>
+      //each actor initialize make slow frontend replying however, backgroud process is little faster than below.
       val actorName = s"${userId}-${UUID.randomUUID}"
       val dbWriteActor: ActorRef = context.actorOf(Props[DBWriteActor], actorName)
       dbWriteActor ! Employee(userId)
 
+    case KeyPlayer(userId, key) =>
+      //global writer reply qucikly to frontend, however backgroud process is very slow.
+      globalWriter ! KeyPlayer(userId, key)
+
+    /*
     case KeyPlayer(userId, key) =>
       val uri = "http://localhost:4000/washlets/list"
       val request = HttpRequest(POST, uri)
@@ -60,6 +75,7 @@ class DelegateActor extends Actor {
       val result = Await.result(future, timeout.duration)
 
       sender() ! result
+    */
 
     case HttpResponse(StatusCodes.OK, headers, entity, _) => {
       entity match {
@@ -70,6 +86,9 @@ class DelegateActor extends Actor {
           println("error!")
       }
     }
+
+    case userId: String =>
+      println(s"got last message from ${userId} ${sender().path.name}")
 
     case _ =>
       println("error!")

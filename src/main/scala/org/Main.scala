@@ -38,6 +38,15 @@ trait Service extends JsonSupport  {
         complete("alive")
       }
 
+    } ~ pathPrefix("api" / "v1" /  "one") {
+      post {
+        entity(as[KeyPlayer]) { myKey: KeyPlayer =>
+          deleageActor ! KeyPlayer(myKey.userId, myKey.key)
+
+          complete("ok\n")
+        }
+      }
+
     } ~ pathPrefix("api" / "v1" /  "sample") {
       post {
         entity(as[KeyPlayer]) { myKey: KeyPlayer =>
