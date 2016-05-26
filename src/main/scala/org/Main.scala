@@ -16,9 +16,9 @@ import scala.concurrent.duration._
 
 import scala.concurrent.{Await, ExecutionContextExecutor}
 
-final case class MyKey(userId: String, key: String)
+final case class KeyPlayer(userId: String, key: String)
 trait JsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
-  implicit val itemFormat: RootJsonFormat[MyKey] = jsonFormat2(MyKey)
+  implicit val itemFormat: RootJsonFormat[KeyPlayer] = jsonFormat2(KeyPlayer)
 }
 
 trait Service extends JsonSupport  {
@@ -40,8 +40,13 @@ trait Service extends JsonSupport  {
 
     } ~ pathPrefix("api" / "v1" /  "sample") {
       post {
-        entity(as[MyKey]) { myKey: MyKey =>
-          implicit val timeout = Timeout(5 seconds)
+        entity(as[KeyPlayer]) { myKey: KeyPlayer =>
+          hogeActor ! Employee(myKey.userId)
+          //implicit val timeout = Timeout(5 seconds)
+
+          complete(s"${myKey.userId}\n")
+
+          /*
           val future = hogeActor ? myKey
           val result = Await.result(future, timeout.duration).asInstanceOf[HttpResponse]
 
@@ -54,6 +59,7 @@ trait Service extends JsonSupport  {
             case _ =>
               complete("NG")
           }
+          */
         }
       }
     }
@@ -67,7 +73,7 @@ object Main  extends App with Service {
   override val config = ConfigFactory.load()
   override val logger = Logging(system, getClass)
 
-  override val hogeActor: ActorRef  = system.actorOf(Props[HogeActor])
+  override val hogeActor: ActorRef  = system.actorOf(Props[DelegateActor])
 
   Http().bindAndHandle(routes, "0.0.0.0", 8080)
 }
