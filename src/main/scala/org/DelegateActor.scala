@@ -15,12 +15,11 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 import scala.util.Random
 
-case class Employee(userId: String)
 class DBWriteActor extends Actor {
   val logger: LoggingAdapter = Logging(context.system, getClass)
 
   def receive = {
-    case Employee(userId) =>
+    case NormalEmployee(userId) =>
       // do something for database
       val sleepTime = Random.nextInt(5) * 1000L
       Thread.sleep(sleepTime)
@@ -28,19 +27,16 @@ class DBWriteActor extends Actor {
       self ! userId
 
     case KeyPlayer(userId, key) =>
-      val sleepTime = Random.nextInt(5) * 1000L
-      Thread.sleep(sleepTime)
-
       val delegateActor: ActorRef = context.actorOf(Props[DelegateActor])
       delegateActor ! userId
 
     case userId: String =>
-      logger.info(s"${userId} is stopping... ${self.path}, ${self.toString()}")
+      logger.info(s"got last message from ${userId} ${self.path}, ${self.toString()}")
       context.stop(self)
   }
 
   override def postStop: Unit = {
-    logger.info(s"${self.path.name} stopped")
+    //logger.info(s"${self.path.name} stopped")
   }
 
 }
@@ -55,11 +51,11 @@ class DelegateActor extends Actor {
   val globalWriter: ActorRef = context.actorOf(Props[DBWriteActor])
 
   def receive = {
-    case Employee(userId) =>
+    case NormalEmployee(userId) =>
       //each actor initialize make slow frontend replying however, backgroud process is little faster than below.
       val actorName = s"${userId}-${UUID.randomUUID}"
       val dbWriteActor: ActorRef = context.actorOf(Props[DBWriteActor], actorName)
-      dbWriteActor ! Employee(userId)
+      dbWriteActor ! NormalEmployee(userId)
 
     case KeyPlayer(userId, key) =>
       //global writer reply qucikly to frontend, however backgroud process is very slow.
@@ -88,6 +84,9 @@ class DelegateActor extends Actor {
     }
 
     case userId: String =>
+      val sleepTime = Random.nextInt(5) * 1000L
+      Thread.sleep(sleepTime)
+
       println(s"got last message from ${userId} ${sender().path.name}")
 
     case _ =>
