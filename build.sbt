@@ -1,22 +1,26 @@
-name := "akka-sample"
+name := "akka-http-example"
 
-organization := "org"
+organization := "io.wonder.soft"
 
-version := "1.0"
+version := "0.0.1"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.12.4"
 
 scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
 libraryDependencies ++= {
-  val akkaV       = "2.4.2"
-  val akkaStreamV = "2.0.3"
+  val akkaV        = "2.5.10"
+  val akkaStreamV  = "10.1.0"
   Seq(
-    "com.typesafe.akka" %% "akka-actor"                           % akkaV,
-    "com.typesafe.akka" %% "akka-stream-experimental"             % akkaStreamV,
-    "com.typesafe.akka" %% "akka-http-core-experimental"          % akkaStreamV,
-    "com.typesafe.akka" %% "akka-http-experimental"               % akkaStreamV,
-    "com.typesafe.akka" %% "akka-http-spray-json-experimental"    % akkaStreamV,
-    "com.typesafe.akka" %% "akka-http-testkit-experimental"       % akkaStreamV
+    "com.typesafe.akka" %% "akka-actor"              % akkaV,
+    "com.typesafe.akka" %% "akka-persistence"        % akkaV,
+    "com.typesafe.akka" %% "akka-slf4j"              % akkaV,
+    "ch.qos.logback"    %  "logback-classic"         % "1.1.7",
+    "com.typesafe.akka" %% "akka-stream"             % akkaV,
+
+    "com.typesafe.akka" %% "akka-http-core"          % akkaStreamV,
+    "com.typesafe.akka" %% "akka-http"               % akkaStreamV,
+    "com.typesafe.akka" %% "akka-http-spray-json"    % akkaStreamV,
+    "com.typesafe.akka" %% "akka-http-testkit"       % akkaStreamV
   )
 }

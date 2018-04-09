@@ -1,18 +1,13 @@
-package org
+package io.wonder.soft.example.actor
 
 import java.util.UUID
 
-import akka.actor.{Props, ActorRef, ActorSystem, Actor}
-import akka.event.{Logging, LoggingAdapter}
-import akka.http.scaladsl.Http
-import akka.http.scaladsl.model._
-import akka.http.scaladsl.model.{HttpMethods, HttpRequest}
-import HttpMethods._
+import akka.actor.{ Actor, ActorRef, ActorSystem, Props }
+import akka.event.{ Logging, LoggingAdapter }
+import akka.http.scaladsl.model.{ HttpEntity, HttpResponse, StatusCodes }
 import akka.stream.ActorMaterializer
-import akka.util.{Timeout, ByteString}
+import io.wonder.soft.example.{ KeyPlayer, NormalEmployee }
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
 import scala.util.Random
 
 class DBWriteActor extends Actor {
@@ -42,7 +37,6 @@ class DBWriteActor extends Actor {
 }
 
 class DelegateActor extends Actor {
-  import akka.pattern.pipe
 
   implicit val system = ActorSystem("actors")
   implicit val ec = system.dispatcher
