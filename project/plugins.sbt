@@ -13,5 +13,6 @@ libraryDependencies += "mysql" % "mysql-connector-java"  % "5.1.33"
 addSbtPlugin("org.scalikejdbc" %% "scalikejdbc-mapper-generator" % "3.0.+")
 
 //flyway
-addSbtPlugin("org.flywaydb" % "flyway-sbt" % "4.2.0")
+addSbtPlugin("io.github.davidmweber" % "flyway-sbt" % "5.0.0")
+// addSbtPlugin("org.flywaydb" % "flyway-sbt" % "5.0.0")
 resolvers += "Flyway" at "https://flywaydb.org/repo"
